@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>小学学习乐园</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; font-family: "PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+      background: linear-gradient(160deg,#eef4ff 0%,#fef6ff 100%); color: #1f2937; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px; min-height: 100%; }
+    header { text-align: center; padding: 24px 8px 18px; }
+    header h1 { font-size: 30px; }
+    header p { color: #6b7280; margin-top: 8px; font-size: 16px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 22px; }
+    .card { display: block; text-decoration: none; color: inherit; background: #fff;
+      border-radius: 22px; padding: 28px 20px; text-align: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08); transition: transform .1s ease; border: 3px solid transparent; }
+    .card:active { transform: scale(.97); }
+    .card.disabled { opacity: .5; pointer-events: none; }
+    .card .emoji { font-size: 52px; }
+    .card .name { font-size: 24px; font-weight: 800; margin-top: 10px; }
+    .card .desc { font-size: 14px; color: #6b7280; margin-top: 6px; }
+    .card.yuwen { border-color: #fbcfe8; }
+    .card.shuxue { border-color: #bfdbfe; }
+    .soon { display: inline-block; font-size: 12px; background: #f3f4f6; color: #9ca3af;
+      padding: 3px 10px; border-radius: 999px; margin-top: 8px; }
+    footer { text-align: center; color: #9ca3af; font-size: 13px; margin-top: 36px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🎒 小学学习乐园</h1>
+      <p>选择一个科目，开始练习吧</p>
+    </header>
+    <div class="grid">
+      <a class="card yuwen" href="yuwen/index.html">
+        <div class="emoji">📖</div>
+        <div class="name">语文</div>
+        <div class="desc">词语默写 · 错词本</div>
+      </a>
+      <a class="card shuxue disabled" href="#">
+        <div class="emoji">🔢</div>
+        <div class="name">数学</div>
+        <div class="soon">敬请期待</div>
+      </a>
+    </div>
+    <footer>为四年级小朋友打造 · 部编版</footer>
+  </div>
+</body>
+</html>

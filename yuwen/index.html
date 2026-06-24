@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>四年级语文 · 词语默写</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 首页：选择课文 -->
+    <section id="screen-home" class="screen active">
+      <header class="topbar">
+        <h1>📖 四年级语文 · 词语默写</h1>
+        <p class="subtitle">部编版上册</p>
+      </header>
+
+      <div class="home-actions">
+        <button id="btn-wrongbook" class="big-btn wrong">
+          📕 错词本 <span id="wrong-count" class="badge">0</span>
+        </button>
+      </div>
+
+      <h2 class="section-title">选择要默写的课文</h2>
+      <div id="lesson-list" class="lesson-list"></div>
+    </section>
+
+    <!-- 默写页 -->
+    <section id="screen-dictation" class="screen">
+      <header class="topbar small">
+        <button class="back-btn" data-back>← 返回</button>
+        <span id="dictation-title" class="dictation-title">默写</span>
+        <span id="progress" class="progress">1 / 1</span>
+      </header>
+
+      <div class="word-prompt">
+        <div class="prompt-pinyin" id="prompt-pinyin">pīn yīn</div>
+        <p class="prompt-hint">看拼音，在下面手写这个词语 ✍️</p>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="pad" class="pad"></canvas>
+        <div class="canvas-tools">
+          <button id="btn-clear" class="tool-btn">🧹 清空重写</button>
+        </div>
+      </div>
+
+      <div class="dictation-footer">
+        <button id="btn-submit" class="big-btn primary">写好了，检查 ✓</button>
+      </div>
+    </section>
+
+    <!-- 批改页（对照自评） -->
+    <section id="screen-check" class="screen">
+      <header class="topbar small">
+        <span class="dictation-title">对一对，写对了吗？</span>
+      </header>
+
+      <div class="check-body">
+        <div class="check-col">
+          <div class="check-label">正确答案</div>
+          <div id="correct-word" class="correct-word">词语</div>
+          <div id="correct-pinyin" class="correct-pinyin">pīn yīn</div>
+        </div>
+        <div class="check-col">
+          <div class="check-label">你写的</div>
+          <img id="my-writing" class="my-writing" alt="你的手写" />
+        </div>
+      </div>
+
+      <div class="check-actions">
+        <button id="btn-wrong" class="big-btn wrong">❌ 写错了</button>
+        <button id="btn-right" class="big-btn correct">✅ 写对了</button>
+      </div>
+    </section>
+
+    <!-- 结果页 -->
+    <section id="screen-result" class="screen">
+      <header class="topbar small">
+        <span class="dictation-title">🎉 默写完成</span>
+      </header>
+      <div class="result-body">
+        <div class="result-score">
+          <div class="score-num"><span id="score-right">0</span> / <span id="score-total">0</span></div>
+          <div class="score-label">写对了</div>
+        </div>
+        <div id="result-wrong-list" class="result-wrong-list"></div>
+      </div>
+      <div class="result-actions">
+        <button id="btn-retry-wrong" class="big-btn wrong">📕 立刻订正错词</button>
+        <button class="big-btn primary" data-back>🏠 回首页</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="data/words.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
