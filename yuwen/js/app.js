@@ -6,15 +6,20 @@
   "use strict";
 
   const DATA = window.YUWEN_DATA || { lessons: [] };
-  const WRONG_KEY = "yuwen_wrongbook_v1";
+
+  // 错词库 key 按当前用户隔离：yuwen_wrongbook_<uid>
+  function wrongKey() {
+    const uid = window.EduUsers ? window.EduUsers.getCurrentId() : "";
+    return "yuwen_wrongbook_" + (uid || "default");
+  }
 
   // ---------- 错词库 ----------
   function loadWrong() {
-    try { return JSON.parse(localStorage.getItem(WRONG_KEY)) || []; }
+    try { return JSON.parse(localStorage.getItem(wrongKey())) || []; }
     catch (e) { return []; }
   }
   function saveWrong(list) {
-    localStorage.setItem(WRONG_KEY, JSON.stringify(list));
+    localStorage.setItem(wrongKey(), JSON.stringify(list));
   }
   function addWrong(item) {
     const list = loadWrong();
@@ -193,6 +198,114 @@
     show("screen-result");
   }
 
+  // ---------- 用户（登录/选人） ----------
+  let manageMode = false;
+
+  function renderUsers() {
+    const U = window.EduUsers;
+    const list = U.loadUsers();
+    const box = document.getElementById("user-list");
+    box.innerHTML = "";
+    list.forEach(u => {
+      const card = document.createElement("div");
+      card.className = "user-card" + (manageMode ? " manage" : "");
+      card.innerHTML =
+        (u.pin ? '<span class="lock">\uD83D\uDD12</span>' : '') +
+        '<span class="del">\u00D7</span>' +
+        '<div class="ua">' + (u.avatar || "\uD83D\uDC64") + '</div>' +
+        '<div class="un">' + u.name + '</div>';
+      // 删除
+      card.querySelector(".del").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm('\u786E\u5B9A\u5220\u9664\u201C' + u.name + '\u201D\uFF1F\u8BE5\u540C\u5B66\u7684\u9519\u8BCD\u672C\u4F1A\u4E00\u8D77\u6E05\u6389\u3002')) {
+          U.removeUser(u.id);
+          renderUsers();
+        }
+      });
+      // 点头像 = 登录
+      card.addEventListener("click", () => {
+        if (manageMode) { promptRename(u); return; }
+        if (u.pin) {
+          askPin(u.pin, () => loginAs(u));
+        } else {
+          loginAs(u);
+        }
+      });
+      box.appendChild(card);
+    });
+  }
+
+  function promptRename(u) {
+    const name = prompt("\u4FEE\u6539\u540D\u5B57\uFF1A", u.name);
+    if (name && name.trim()) {
+      window.EduUsers.renameUser(u.id, name.trim());
+      renderUsers();
+    }
+  }
+
+  function loginAs(u) {
+    window.EduUsers.setCurrentId(u.id);
+    manageMode = false;
+    enterHome();
+  }
+
+  function enterHome() {
+    const cur = window.EduUsers.getCurrent();
+    if (cur) {
+      document.getElementById("current-user").textContent = (cur.avatar || "\uD83D\uDC64") + " " + cur.name;
+    }
+    renderLessons();
+    updateWrongBadge();
+    show("screen-home");
+  }
+
+  // 简单 PIN 输入弹层（每次重建，避免闭包混乱）
+  function askPin(correctPin, onOk) {
+    const old = document.getElementById("pin-modal");
+    if (old) old.remove();
+
+    let entered = "";
+    const modal = document.createElement("div");
+    modal.id = "pin-modal";
+    modal.className = "pin-modal show";
+    modal.innerHTML =
+      '<div class="pin-box">' +
+      '<h3>\u8F93\u5165 PIN \u7801</h3>' +
+      '<div class="pin-sub">4 \u4F4D\u6570\u5B57</div>' +
+      '<div class="pin-dots" id="pin-dots"></div>' +
+      '<div class="pin-pad" id="pin-pad"></div>' +
+      '<div class="pin-actions"><button class="pin-cancel" id="pin-cancel">\u53D6\u6D88</button></div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    const dots = modal.querySelector("#pin-dots");
+    function render() {
+      dots.textContent = "\u25CF".repeat(entered.length) + "\u25CB".repeat(Math.max(0, 4 - entered.length));
+    }
+    function close() { modal.remove(); }
+    function onKey(k) {
+      if (k === "\u232B") { entered = entered.slice(0, -1); render(); return; }
+      if (!/^[0-9]$/.test(k)) return;
+      if (entered.length < 4) entered += k;
+      render();
+      if (entered.length === 4) {
+        if (entered === correctPin) { close(); onOk(); }
+        else { dots.textContent = "\u274C \u518D\u8BD5\u4E00\u6B21"; entered = ""; }
+      }
+    }
+    const pad = modal.querySelector("#pin-pad");
+    ["1","2","3","4","5","6","7","8","9","\u232B","0",""].forEach(k => {
+      const b = document.createElement("button");
+      b.className = "pin-key";
+      if (!k) { b.style.visibility = "hidden"; }
+      b.textContent = k;
+      b.addEventListener("click", () => onKey(k));
+      pad.appendChild(b);
+    });
+    modal.querySelector("#pin-cancel").addEventListener("click", close);
+    render();
+  }
+
   // ---------- 首页：渲染课文列表 ----------
   function renderLessons() {
     const list = document.getElementById("lesson-list");
@@ -245,6 +358,28 @@
     document.getElementById("btn-right").addEventListener("click", () => judge(true));
     document.getElementById("btn-wrong").addEventListener("click", () => judge(false));
     document.getElementById("btn-wrongbook").addEventListener("click", startWrongBook);
+
+    // 用户页：新增、管理、切换
+    document.getElementById("btn-add-user").addEventListener("click", () => {
+      const name = prompt("\u65B0\u540C\u5B66\u7684\u540D\u5B57\uFF1A");
+      if (name && name.trim()) {
+        window.EduUsers.addUser(name.trim());
+        manageMode = false;
+        renderUsers();
+      }
+    });
+    document.getElementById("btn-manage-user").addEventListener("click", () => {
+      manageMode = !manageMode;
+      document.getElementById("btn-manage-user").textContent = manageMode ? "\u2705 \u5B8C\u6210" : "\u2699\uFE0F \u7BA1\u7406";
+      renderUsers();
+    });
+    document.getElementById("btn-switch-user").addEventListener("click", () => {
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      manageMode = false;
+      document.getElementById("btn-manage-user").textContent = "\u2699\uFE0F \u7BA1\u7406";
+      renderUsers();
+      show("screen-login");
+    });
     document.getElementById("btn-retry-wrong").addEventListener("click", () => {
       const w = showResult._wrong || [];
       if (w.length) startSession(w, "📕 错词订正");
@@ -256,8 +391,9 @@
 
   // ---------- 启动 ----------
   document.addEventListener("DOMContentLoaded", () => {
-    renderLessons();
-    updateWrongBadge();
+    window.EduUsers.ensureSeed();   // 首次预置示例用户（小胖 + 小朋友2）
+    renderUsers();
     bind();
+    // 默认停在选人页（screen-login 已是 active）
   });
 })();
