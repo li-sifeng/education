@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>四年级英语 · 听写</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 首页：选择单元 -->
+    <section id="screen-home" class="screen active">
+      <header class="topbar">
+        <h1>🔤 四年级英语 · 听写</h1>
+        <p class="subtitle">译林版（苏州）4A 上册</p>
+      </header>
+
+      <div class="home-actions">
+        <button id="btn-wrongbook" class="big-btn wrong">
+          📕 错词本 <span id="wrong-count" class="badge">0</span>
+        </button>
+      </div>
+
+      <div class="mode-switch">
+        <span class="mode-label">听写内容：</span>
+        <div class="seg">
+          <button class="seg-btn active" data-mode="words">单词</button>
+          <button class="seg-btn" data-mode="sentences">句子</button>
+          <button class="seg-btn" data-mode="both">单词+句子</button>
+        </div>
+      </div>
+
+      <h2 class="section-title">选择要听写的单元</h2>
+      <div id="lesson-list" class="lesson-list"></div>
+    </section>
+
+    <!-- 听写页 -->
+    <section id="screen-dictation" class="screen">
+      <header class="topbar small">
+        <button class="back-btn" data-back>← 返回</button>
+        <span id="dictation-title" class="dictation-title">听写</span>
+        <span id="progress" class="progress">1 / 1</span>
+      </header>
+
+      <div class="word-prompt">
+        <button id="btn-speak" class="speak-btn">🔊 听一听</button>
+        <div class="prompt-zh" id="prompt-zh">中文意思</div>
+        <p class="prompt-hint">听发音，看中文，把英文拼写出来 ⌨️</p>
+      </div>
+
+      <div class="answer-wrap">
+        <input id="answer-input" class="answer-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="off"
+               spellcheck="false" placeholder="在这里打出英文…" />
+      </div>
+
+      <div class="dictation-footer">
+        <button id="btn-submit" class="big-btn primary">检查 ✓</button>
+        <button id="btn-replay" class="tool-btn">🔁 再听一遍</button>
+      </div>
+    </section>
+
+    <!-- 批改页（自动判分） -->
+    <section id="screen-check" class="screen">
+      <header class="topbar small">
+        <span id="check-head" class="dictation-title">对一对</span>
+      </header>
+
+      <div class="check-body single">
+        <div id="check-verdict" class="check-verdict">✅</div>
+        <div class="check-col">
+          <div class="check-label">正确答案</div>
+          <div id="correct-en" class="correct-en">word</div>
+          <div id="correct-zh" class="correct-zh">中文</div>
+        </div>
+        <div class="check-col">
+          <div class="check-label">你写的</div>
+          <div id="my-answer" class="my-answer">—</div>
+        </div>
+      </div>
+
+      <div class="check-actions single">
+        <button id="btn-next" class="big-btn primary">下一个 →</button>
+      </div>
+    </section>
+
+    <!-- 结果页 -->
+    <section id="screen-result" class="screen">
+      <header class="topbar small">
+        <span class="dictation-title">🎉 听写完成</span>
+      </header>
+      <div class="result-body">
+        <div class="result-score">
+          <div class="score-num"><span id="score-right">0</span> / <span id="score-total">0</span></div>
+          <div class="score-label">写对了</div>
+        </div>
+        <div id="result-wrong-list" class="result-wrong-list"></div>
+      </div>
+      <div class="result-actions">
+        <button id="btn-retry-wrong" class="big-btn wrong">📕 立刻订正错词</button>
+        <button class="big-btn primary" data-back>🏠 回首页</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="data/words_en.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
